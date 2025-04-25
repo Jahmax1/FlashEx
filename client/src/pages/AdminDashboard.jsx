@@ -4,16 +4,17 @@ import axios from 'axios';
 import { ThemeContext } from '../context/ThemeContext';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { FaSignOutAlt } from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const { theme } = useContext(ThemeContext);
-  const { user, token } = useContext(AuthContext);
+  const { user, token, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
-      navigate('/login');
+      navigate('/auth');
     } else {
       fetchTransactions();
     }
@@ -34,9 +35,13 @@ const AdminDashboard = () => {
 
   const handleAction = async (id, action) => {
     try {
-      await axios.post(`http://localhost:5000/api/transactions/${id}/${action}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        `http://localhost:5000/api/transactions/${id}/${action}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setTransactions(transactions.filter((tx) => tx._id !== id));
       alert(`Transaction ${action}ed!`);
     } catch (error) {
@@ -45,24 +50,60 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className={`min-h-screen p-4 ${theme === 'dark' ? 'bg-dark-bg' : 'bg-light-bg'}`}>
+    <div
+      className={`min-h-screen p-4 ${
+        theme === 'dark'
+          ? 'bg-gradient-to-br from-dark-bg to-gray-900'
+          : 'bg-gradient-to-br from-light-bg to-gray-200'
+      }`}
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="max-w-4xl mx-auto"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="glass rounded-2xl p-8 max-w-4xl mx-auto"
       >
-        <h2 className={`text-3xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
-          Admin Dashboard
-        </h2>
-        <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+        <div className="flex justify-between items-center mb-6">
+          <h2
+            className={`text-3xl font-bold ${
+              theme === 'dark' ? 'text-neon-blue' : 'text-gray-800'
+            }`}
+          >
+            Admin Dashboard
+          </h2>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`px-4 py-2 rounded-lg ${
+              theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-500 text-white'
+            } font-semibold flex items-center`}
+            onClick={logout}
+          >
+            <FaSignOutAlt className="mr-2" /> Logout
+          </motion.button>
+        </div>
+        <h3
+          className={`text-xl font-semibold mb-4 ${
+            theme === 'dark' ? 'text-white' : 'text-gray-800'
+          }`}
+        >
           Pending Transactions
         </h3>
         {transactions.length === 0 ? (
-          <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>No pending transactions.</p>
+          <p
+            className={`${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            No pending transactions.
+          </p>
         ) : (
           <table className="w-full text-left">
             <thead>
-              <tr className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              <tr
+                className={`${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}
+              >
                 <th>User</th>
                 <th>Action</th>
                 <th>Crypto</th>
@@ -73,7 +114,12 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {transactions.map((tx) => (
-                <tr key={tx._id} className={`${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
+                <tr
+                  key={tx._id}
+                  className={`${
+                    theme === 'dark' ? 'text-white' : 'text-gray-800'
+                  }`}
+                >
                   <td>{tx.userId.slice(0, 6)}...</td>
                   <td>{tx.action}</td>
                   <td>{tx.crypto}</td>
