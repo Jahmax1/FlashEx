@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/Transaction');
 const auth = require('../middleware/auth');
+const { sendAdminNotification } = require('../utils/notifications');
 
 // Submit a transaction
 router.post('/', async (req, res) => {
@@ -12,6 +13,7 @@ router.post('/', async (req, res) => {
     }
     const transaction = new Transaction({ userId, action, crypto, amount, fiat, bank });
     await transaction.save();
+    await sendAdminNotification(transaction);
     res.status(201).json({ message: 'Request submitted' });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
