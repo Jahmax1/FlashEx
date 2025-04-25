@@ -31,14 +31,14 @@ const AuthPage = () => {
     <div
       className={`min-h-screen flex items-center justify-center p-4 ${
         theme === 'dark'
-          ? 'bg-gradient-to-br from-dark-bg to-gray-900'
-          : 'bg-gradient-to-br from-light-bg to-gray-200'
+          ? 'bg-gradient-to-br from-dark-bg to-[#1A1A3E]'
+          : 'bg-gradient-to-br from-light-bg to-[#E5E7EB]'
       }`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="glass rounded-2xl p-8 max-w-md w-full"
       >
         <AnimatePresence mode="wait">
@@ -51,7 +51,7 @@ const AuthPage = () => {
           >
             <h2
               className={`text-3xl font-bold mb-6 flex items-center ${
-                theme === 'dark' ? 'text-neon-blue' : 'text-gray-800'
+                theme === 'dark' ? 'text-cyan' : 'text-text-light'
               }`}
             >
               {isLogin ? (
@@ -71,8 +71,8 @@ const AuthPage = () => {
                   className={`w-full p-3 rounded-lg border ${
                     theme === 'dark'
                       ? 'bg-gray-800 text-white border-gray-600'
-                      : 'bg-gray-100 text-gray-800 border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                      : 'bg-gray-100 text-text-light border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
@@ -85,8 +85,8 @@ const AuthPage = () => {
                   className={`w-full p-3 rounded-lg border ${
                     theme === 'dark'
                       ? 'bg-gray-800 text-white border-gray-600'
-                      : 'bg-gray-100 text-gray-800 border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                      : 'bg-gray-100 text-text-light border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
@@ -99,8 +99,8 @@ const AuthPage = () => {
                     className={`w-full p-3 rounded-lg border ${
                       theme === 'dark'
                         ? 'bg-gray-800 text-white border-gray-600'
-                        : 'bg-gray-100 text-gray-800 border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                        : 'bg-gray-100 text-text-light border-gray-300'
+                    } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
                   >
@@ -115,10 +115,10 @@ const AuthPage = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`w-full p-3 rounded-lg ${
+                className={`w-full p-3 rounded-lg glow-button ${
                   theme === 'dark'
-                    ? 'bg-neon-green text-black'
-                    : 'bg-blue-600 text-white'
+                    ? 'bg-cyan text-dark-bg'
+                    : 'bg-cyan text-light-bg'
                 } font-semibold`}
                 type="submit"
               >
@@ -133,7 +133,7 @@ const AuthPage = () => {
               {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
               <button
                 className={`underline ${
-                  theme === 'dark' ? 'text-neon-blue' : 'text-blue-600'
+                  theme === 'dark' ? 'text-cyan' : 'text-cyan'
                 }`}
                 onClick={() => setIsLogin(!isLogin)}
               >
