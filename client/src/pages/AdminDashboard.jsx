@@ -2,42 +2,35 @@ import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const { theme } = useContext(ThemeContext);
-  const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
 
-  const login = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      setToken(res.data.token);
-      localStorage.setItem('adminToken', res.data.token);
-      setEmail('');
-      setPassword('');
-    } catch (error) {
-      alert('Login failed!');
+  useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      navigate('/login');
+    } else {
+      fetchTransactions();
+    }
+  }, [user, navigate]);
+
+  const fetchTransactions = async () => {
+    if (token) {
+      try {
+        const res = await axios.get('http://localhost:5000/api/transactions/pending', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTransactions(res.data);
+      } catch (error) {
+        alert('Failed to load transactions.');
+      }
     }
   };
-
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      if (token) {
-        try {
-          const res = await axios.get('http://localhost:5000/api/transactions/pending', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setTransactions(res.data);
-        } catch (error) {
-          alert('Failed to load transactions.');
-        }
-      }
-    };
-    fetchTransactions();
-  }, [token]);
 
   const handleAction = async (id, action) => {
     try {
@@ -50,45 +43,6 @@ const AdminDashboard = () => {
       alert(`Failed to ${action} transaction.`);
     }
   };
-
-  if (!token) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center p-4 ${theme === 'dark' ? 'bg-dark-bg' : 'bg-light-bg'}`}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`bg-white bg-opacity-10 rounded-xl p-8 max-w-md w-full ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}
-        >
-          <h2 className="text-2xl font-bold mb-6">Admin Login</h2>
-          <form onSubmit={login}>
-            <input
-              type="email"
-              className={`w-full p-3 mb-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-800'}`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              required
-            />
-            <input
-              type="password"
-              className={`w-full p-3 mb-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-800'}`}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              className={`w-full p-3 rounded-lg ${theme === 'dark' ? 'bg-neon-green text-black' : 'bg-blue-600 text-white'}`}
-              type="submit"
-            >
-              Login
-            </motion.button>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className={`min-h-screen p-4 ${theme === 'dark' ? 'bg-dark-bg' : 'bg-light-bg'}`}>

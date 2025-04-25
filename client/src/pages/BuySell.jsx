@@ -1,13 +1,23 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import Web3 from 'web3';
 import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const BuySell = () => {
   const { theme } = useContext(ThemeContext);
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [form, setForm] = useState({ action: 'buy', crypto: 'BTC', amount: '', fiat: 'USD', bank: '' });
   const [walletAddress, setWalletAddress] = useState('');
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -35,14 +45,17 @@ const BuySell = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/transactions', {
-        userId: walletAddress,
-        action: form.action,
-        crypto: form.crypto,
-        amount: parseFloat(form.amount),
-        fiat: form.fiat,
-        bank: form.bank,
-      });
+      await axios.post(
+        'http://localhost:5000/api/transactions',
+        {
+          action: form.action,
+          crypto: form.crypto,
+          amount: parseFloat(form.amount),
+          fiat: form.fiat,
+          bank: form.bank,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert('Request submitted!');
       setForm({ action: 'buy', crypto: 'BTC', amount: '', fiat: 'USD', bank: '' });
     } catch (error) {

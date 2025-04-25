@@ -3,25 +3,36 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import Web3 from 'web3';
 import { ThemeContext } from '../context/ThemeContext';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
   const { theme } = useContext(ThemeContext);
+  const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState('');
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      if (walletAddress) {
-        try {
-          const res = await axios.get('http://localhost:5000/api/transactions/pending');
-          setTransactions(res.data.filter((tx) => tx.userId === walletAddress));
-        } catch (error) {
-          alert('Failed to load transactions.');
-        }
+    if (!user) {
+      navigate('/login');
+    } else {
+      fetchTransactions();
+    }
+  }, [user, navigate]);
+
+  const fetchTransactions = async () => {
+    if (token) {
+      try {
+        const res = await axios.get('http://localhost:5000/api/transactions/pending', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTransactions(res.data.filter((tx) => tx.userId === user.userId));
+      } catch (error) {
+        alert('Failed to load transactions.');
       }
-    };
-    fetchTransactions();
-  }, [walletAddress]);
+    }
+  };
 
   const connectWallet = async () => {
     if (window.ethereum) {
