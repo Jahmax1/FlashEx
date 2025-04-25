@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const transactionRoutes = require('./src/routes/transactions');
 
 dotenv.config();
 
@@ -10,11 +11,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI); // Debug log
-
-mongoose.connect(process.env.MONGODB_URI)
+mongoose
+  .connect(process.env.MONGODB_URI, {})
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB error:', err));
+
+app.use('/api/transactions', transactionRoutes);
 
 app.get('/', (req, res) => {
   res.send('FlashEx Backend');
