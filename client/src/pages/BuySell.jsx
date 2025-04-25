@@ -21,7 +21,7 @@ const BuySell = () => {
       navigate('/auth');
     } else {
       fetchPrices();
-      const interval = setInterval(fetchPrices, 10000); // Update every 10 seconds
+      const interval = setInterval(fetchPrices, 10000);
       return () => clearInterval(interval);
     }
   }, [user, navigate]);
@@ -93,29 +93,34 @@ const BuySell = () => {
     <div
       className={`min-h-screen flex items-center justify-center p-4 ${
         theme === 'dark'
-          ? 'bg-gradient-to-br from-dark-bg to-gray-900'
-          : 'bg-gradient-to-br from-light-bg to-gray-200'
+          ? 'bg-gradient-to-br from-dark-bg to-[#1A1A3E]'
+          : 'bg-gradient-to-br from-light-bg to-[#E5E7EB]'
       }`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="glass rounded-2xl p-8 max-w-lg w-full"
       >
         <h2
           className={`text-3xl font-bold mb-6 ${
-            theme === 'dark' ? 'text-neon-blue' : 'text-gray-800'
+            theme === 'dark' ? 'text-cyan' : 'text-text-light'
           }`}
         >
           Buy or Sell Crypto
         </h2>
         <div className="flex justify-between mb-6">
-          <div className="flex items-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center"
+          >
             <FaBitcoin className="text-yellow-500 mr-2" size={24} />
             <span
               className={`font-semibold ${
                 priceChanges.btc === 1
-                  ? 'text-green-500'
+                  ? 'text-neon-green'
                   : priceChanges.btc === -1
                   ? 'text-red-500'
                   : 'text-gray-500'
@@ -123,13 +128,17 @@ const BuySell = () => {
             >
               BTC: ${prices.btc.toLocaleString()}
             </span>
-          </div>
-          <div className="flex items-center">
-            <FaEthereum className="text-blue-500 mr-2" size={24} />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center"
+          >
+            <FaEthereum className="text-blue-400 mr-2" size={24} />
             <span
               className={`font-semibold ${
                 priceChanges.eth === 1
-                  ? 'text-green-500'
+                  ? 'text-neon-green'
                   : priceChanges.eth === -1
                   ? 'text-red-500'
                   : 'text-gray-500'
@@ -137,15 +146,15 @@ const BuySell = () => {
             >
               ETH: ${prices.eth.toLocaleString()}
             </span>
-          </div>
+          </motion.div>
         </div>
         <form onSubmit={handleSubmit}>
           <select
             className={`w-full p-3 mb-4 rounded-lg border ${
               theme === 'dark'
                 ? 'bg-gray-800 text-white border-gray-600'
-                : 'bg-gray-100 text-gray-800 border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                : 'bg-gray-100 text-text-light border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
             value={form.action}
             onChange={(e) => setForm({ ...form, action: e.target.value })}
           >
@@ -156,8 +165,8 @@ const BuySell = () => {
             className={`w-full p-3 mb-4 rounded-lg border ${
               theme === 'dark'
                 ? 'bg-gray-800 text-white border-gray-600'
-                : 'bg-gray-100 text-gray-800 border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                : 'bg-gray-100 text-text-light border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
             value={form.crypto}
             onChange={(e) => setForm({ ...form, crypto: e.target.value })}
           >
@@ -169,8 +178,8 @@ const BuySell = () => {
             className={`w-full p-3 mb-4 rounded-lg border ${
               theme === 'dark'
                 ? 'bg-gray-800 text-white border-gray-600'
-                : 'bg-gray-100 text-gray-800 border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                : 'bg-gray-100 text-text-light border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
             value={form.amount}
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
             placeholder="Amount"
@@ -181,8 +190,8 @@ const BuySell = () => {
             className={`w-full p-3 mb-4 rounded-lg border ${
               theme === 'dark'
                 ? 'bg-gray-800 text-white border-gray-600'
-                : 'bg-gray-100 text-gray-800 border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                : 'bg-gray-100 text-text-light border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
             value={form.fiat}
             onChange={(e) => setForm({ ...form, fiat: e.target.value })}
           >
@@ -194,8 +203,8 @@ const BuySell = () => {
             className={`w-full p-3 mb-4 rounded-lg border ${
               theme === 'dark'
                 ? 'bg-gray-800 text-white border-gray-600'
-                : 'bg-gray-100 text-gray-800 border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-neon-blue`}
+                : 'bg-gray-100 text-text-light border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-cyan glow-button`}
             value={form.bank}
             onChange={(e) => setForm({ ...form, bank: e.target.value })}
             placeholder="Bank Account/IBAN"
@@ -204,10 +213,10 @@ const BuySell = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`w-full p-3 rounded-lg ${
+            className={`w-full p-3 rounded-lg glow-button ${
               theme === 'dark'
-                ? 'bg-neon-green text-black'
-                : 'bg-blue-600 text-white'
+                ? 'bg-neon-green text-dark-bg'
+                : 'bg-neon-green text-light-bg'
             } font-semibold`}
             type="submit"
           >
@@ -217,10 +226,10 @@ const BuySell = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`mt-4 w-full p-3 rounded-lg ${
+          className={`mt-4 w-full p-3 rounded-lg glow-button ${
             theme === 'dark'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-300 text-black'
+              ? 'bg-cyan text-dark-bg'
+              : 'bg-cyan text-light-bg'
           } font-semibold`}
           onClick={connectWallet}
         >
