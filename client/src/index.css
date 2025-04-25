@@ -5,6 +5,7 @@
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 
 .dark {
@@ -15,4 +16,12 @@ body {
 .light {
   background-color: #F3F4F6;
   color: #1F2937;
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
