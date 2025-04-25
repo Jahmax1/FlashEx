@@ -1,22 +1,23 @@
 # FlashEx
 
-A crypto-to-fiat exchange platform. Users register with a role (user or admin), log in, and are redirected to their respective dashboards. Users can connect wallets, submit buy/sell requests, and view transaction history. Admins manage transactions with accept/decline actions. Features email notifications and a responsive UI.
+A futuristic crypto-to-fiat exchange platform with a stunning UI. Users register with a role (user or admin), log in, and access role-specific dashboards. Features real-time crypto prices, wallet integration, transaction management, email notifications, and a responsive design with a cyan/neon-green palette.
 
 ## Features
-- Register with role selection (user or admin).
-- Login with role-based redirection to dashboards.
-- Navigation bar with role-based links.
-- Connect MetaMask for wallet integration.
-- Buy/sell crypto with transaction submission.
-- User dashboard with transaction history.
-- Admin dashboard to accept/decline transactions.
-- Email notifications for admins using SendGrid.
-- Dark/light theme switcher.
+- **Futuristic UI**: Glassmorphism, cyan gradients, neon accents, and smooth animations.
+- **Auth System**: Toggleable login/register with glowing inputs and role selection.
+- **Real-Time Prices**: Live BTC/ETH prices with neon green/red changes (CoinGecko API).
+- **Role-Based Access**: Users access Buy/Sell and Dashboard; admins manage transactions.
+- **Navigation**: Minimal header on landing; in-page navigation elsewhere.
+- **Responsive Design**: Optimized for mobile, tablet, and desktop.
+- **Wallet Integration**: Connect MetaMask for transactions.
+- **Email Notifications**: Admins receive emails for new requests (SendGrid).
+- **Dark/Light Theme**: Toggleable theme with vibrant gradients.
 
 ## Tech Stack
-- **Frontend**: React, Tailwind CSS, Web3.js, Axios, Framer Motion, React Router
+- **Frontend**: React, Tailwind CSS, Web3.js, Axios, Framer Motion, React Router, React Icons
 - **Backend**: Node.js, Express, MongoDB, Mongoose, Nodemailer, JWT, Bcrypt
-- **Tools**: Git, MongoDB Atlas, SendGrid
+- **APIs**: CoinGecko (prices), SendGrid (emails)
+- **Tools**: Git, MongoDB Atlas
 
 ## Setup
 1. Clone the repo:
