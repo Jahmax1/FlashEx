@@ -1,11 +1,13 @@
-import { Routes, Route } from "react-router-dom";
-import Transactions from "./components/Transactions";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Landing from './pages/Landing';
 
 function App() {
   return (
-    <div>
-      <h1>FlashEx</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+      </Routes>
+    </Router>
   );
 }
 
