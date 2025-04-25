@@ -11,7 +11,9 @@ const Header = () => {
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-700 text-neon-blue' : 'bg-gray-200 text-gray-800'}`}
+        className={`p-2 rounded-full glow-button ${
+          theme === 'dark' ? 'bg-gray-800 text-cyan' : 'bg-gray-200 text-text-light'
+        }`}
         onClick={toggleTheme}
       >
         {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}

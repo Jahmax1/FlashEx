@@ -11,8 +11,8 @@ const Landing = () => {
     <div
       className={`min-h-screen flex flex-col ${
         theme === 'dark'
-          ? 'bg-gradient-to-br from-dark-bg to-gray-900'
-          : 'bg-gradient-to-br from-light-bg to-gray-200'
+          ? 'bg-gradient-to-br from-dark-bg to-[#1A1A3E]'
+          : 'bg-gradient-to-br from-light-bg to-[#E5E7EB]'
       }`}
     >
       <Header />
@@ -20,12 +20,12 @@ const Landing = () => {
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="text-center backdrop-blur-md bg-white bg-opacity-10 rounded-xl p-8 shadow-xl"
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="glass rounded-2xl p-8 max-w-lg w-full text-center"
         >
           <h1
             className={`text-5xl md:text-6xl font-extrabold mb-4 ${
-              theme === 'dark' ? 'text-neon-blue' : 'text-gray-800'
+              theme === 'dark' ? 'text-cyan' : 'text-text-light'
             }`}
           >
             FlashEx
@@ -35,17 +35,17 @@ const Landing = () => {
               theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
             }`}
           >
-            Trade Crypto with Lightning Speed
+            Trade Crypto with Unmatched Speed and Style
           </p>
-          <Link to="/login">
+          <Link to="/auth">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-8 py-3 rounded-full text-lg font-semibold ${
+              className={`px-8 py-3 rounded-full text-lg font-semibold glow-button ${
                 theme === 'dark'
-                  ? 'bg-neon-green text-black'
-                  : 'bg-blue-600 text-white'
-              } shadow-lg`}
+                  ? 'bg-cyan text-dark-bg'
+                  : 'bg-cyan text-light-bg'
+              }`}
             >
               Start Trading
             </motion.button>
