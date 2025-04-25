@@ -54,31 +54,32 @@ const UserDashboard = () => {
     <div
       className={`min-h-screen p-4 ${
         theme === 'dark'
-          ? 'bg-gradient-to-br from-dark-bg to-gray-900'
-          : 'bg-gradient-to-br from-light-bg to-gray-200'
+          ? 'bg-gradient-to-br from-dark-bg to-[#1A1A3E]'
+          : 'bg-gradient-to-br from-light-bg to-[#E5E7EB]'
       }`}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="glass rounded-2xl p-8 max-w-4xl mx-auto"
       >
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h2
             className={`text-3xl font-bold ${
-              theme === 'dark' ? 'text-neon-blue' : 'text-gray-800'
+              theme === 'dark' ? 'text-cyan' : 'text-text-light'
             }`}
           >
             User Dashboard
           </h2>
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 mt-4 sm:mt-0">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-lg glow-button ${
                 theme === 'dark'
-                  ? 'bg-neon-green text-black'
-                  : 'bg-blue-600 text-white'
+                  ? 'bg-cyan text-dark-bg'
+                  : 'bg-cyan text-light-bg'
               } font-semibold`}
               onClick={() => navigate('/buy-sell')}
             >
@@ -87,7 +88,7 @@ const UserDashboard = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-4 py-2 rounded-lg ${
+              className={`px-4 py-2 rounded-lg glow-button ${
                 theme === 'dark' ? 'bg-red-600 text-white' : 'bg-red-500 text-white'
               } font-semibold flex items-center`}
               onClick={logout}
@@ -100,10 +101,10 @@ const UserDashboard = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`px-6 py-3 rounded-lg flex items-center ${
+            className={`px-6 py-3 rounded-lg flex items-center glow-button ${
               theme === 'dark'
-                ? 'bg-blue-600 text-white'
-                : 'bg-blue-600 text-white'
+                ? 'bg-cyan text-dark-bg'
+                : 'bg-cyan text-light-bg'
             } font-semibold`}
             onClick={connectWallet}
           >
@@ -120,7 +121,7 @@ const UserDashboard = () => {
             </p>
             <h3
               className={`text-xl font-semibold mb-4 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-800'
+                theme === 'dark' ? 'text-white' : 'text-text-light'
               }`}
             >
               Transaction History
@@ -134,35 +135,37 @@ const UserDashboard = () => {
                 No transactions yet.
               </p>
             ) : (
-              <table className="w-full text-left">
-                <thead>
-                  <tr
-                    className={`${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                    }`}
-                  >
-                    <th>Action</th>
-                    <th>Crypto</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => (
+              <div className="glass p-4 rounded-lg overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
                     <tr
-                      key={tx._id}
                       className={`${
-                        theme === 'dark' ? 'text-white' : 'text-gray-800'
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                       }`}
                     >
-                      <td>{tx.action}</td>
-                      <td>{tx.crypto}</td>
-                      <td>{tx.amount}</td>
-                      <td>{tx.status}</td>
+                      <th className="p-2">Action</th>
+                      <th className="p-2">Crypto</th>
+                      <th className="p-2">Amount</th>
+                      <th className="p-2">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {transactions.map((tx) => (
+                      <tr
+                        key={tx._id}
+                        className={`${
+                          theme === 'dark' ? 'text-white' : 'text-text-light'
+                        }`}
+                      >
+                        <td className="p-2">{tx.action}</td>
+                        <td className="p-2">{tx.crypto}</td>
+                        <td className="p-2">{tx.amount}</td>
+                        <td className="p-2">{tx.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}
