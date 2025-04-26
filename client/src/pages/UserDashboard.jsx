@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import { ThemeContext } from '../context/ThemeContext';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { FaWallet, FaSignOutAlt } from 'react-icons/fa';
+import { FaWallet, FaSignOutAlt, FaBitcoin, FaEthereum, FaDollarSign, FaEuroSign } from 'react-icons/fa';
 
 const UserDashboard = () => {
   const { theme } = useContext(ThemeContext);
@@ -13,6 +13,7 @@ const UserDashboard = () => {
   const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const [balances, setBalances] = useState({ BTC: 0, ETH: 0, USD: 0, EUR: 0 });
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -20,8 +21,9 @@ const UserDashboard = () => {
       navigate('/auth');
     } else {
       fetchTransactions();
+      fetchBalances();
     }
-  }, [user, navigate]);
+  }, [user, navigate, walletAddress]);
 
   const fetchTransactions = async () => {
     if (token) {
@@ -32,7 +34,39 @@ const UserDashboard = () => {
         setTransactions(res.data);
         setError('');
       } catch (error) {
+        console.error('Transaction fetch error:', error);
         setError(error.response?.data?.error || 'Failed to load transactions');
+      }
+    }
+  };
+
+  const fetchBalances = async () => {
+    if (token) {
+      try {
+        // Fetch fiat balances from MongoDB
+        const fiatRes = await axios.get('http://localhost:5000/api/users/balance', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setBalances((prev) => ({ ...prev, ...fiatRes.data }));
+
+        // Fetch crypto balances only if wallet is connected
+        if (walletAddress && window.ethereum) {
+          try {
+            const web3 = new Web3(window.ethereum);
+            const ethBalance = await web3.eth.getBalance(walletAddress);
+            setBalances((prev) => ({
+              ...prev,
+              ETH: parseFloat(web3.utils.fromWei(ethBalance, 'ether')).toFixed(4),
+              BTC: 0, // Placeholder (requires Bitcoin API)
+            }));
+          } catch (web3Error) {
+            console.error('Web3 balance fetch failed:', web3Error.message);
+            setBalances((prev) => ({ ...prev, ETH: 0, BTC: 0 }));
+          }
+        }
+      } catch (error) {
+        console.error('Balance fetch error:', error.message);
+        setError(error.response?.data?.error || 'Failed to load balances');
       }
     }
   };
@@ -44,7 +78,9 @@ const UserDashboard = () => {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         const accounts = await web3.eth.getAccounts();
         setWalletAddress(accounts[0]);
+        setError('');
       } catch (error) {
+        console.error('Wallet connection error:', error.message);
         setError('Failed to connect wallet');
       }
     } else {
@@ -110,7 +146,7 @@ const UserDashboard = () => {
               theme === 'dark'
                 ? 'bg-cyan text-dark-bg'
                 : 'bg-cyan text-light-bg'
-            } font-semibold`}
+              } font-semibold`}
             onClick={connectWallet}
           >
             <FaWallet className="mr-2" /> Connect Wallet
@@ -124,6 +160,67 @@ const UserDashboard = () => {
             >
               Wallet: {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
             </p>
+            <h3
+              className={`text-xl font-semibold mb-4 ${
+                theme === 'dark' ? 'text-white' : 'text-text-light'
+              }`}
+            >
+              Wallet Balances
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="glass p-4 rounded-lg flex items-center">
+                <FaBitcoin className="text-yellow-500 mr-3" size={24} />
+                <div>
+                  <p className="text-sm text-gray-400">Bitcoin</p>
+                  <p
+                    className={`${
+                      theme === 'dark' ? 'text-white' : 'text-text-light'
+                    } font-semibold`}
+                  >
+                    {balances.BTC.toFixed(4)} BTC
+                  </p>
+                </div>
+              </div>
+              <div className="glass p-4 rounded-lg flex items-center">
+                <FaEthereum className="text-blue-400 mr-3" size={24} />
+                <div>
+                  <p className="text-sm text-gray-400">Ethereum</p>
+                  <p
+                    className={`${
+                      theme === 'dark' ? 'text-white' : 'text-text-light'
+                    } font-semibold`}
+                  >
+                    {balances.ETH.toFixed(4)} ETH
+                  </p>
+                </div>
+              </div>
+              <div className="glass p-4 rounded-lg flex items-center">
+                <FaDollarSign className="text-green-500 mr-3" size={24} />
+                <div>
+                  <p className="text-sm text-gray-400">US Dollar</p>
+                  <p
+                    className={`${
+                      theme === 'dark' ? 'text-white' : 'text-text-light'
+                    } font-semibold`}
+                  >
+                    ${balances.USD.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+              <div className="glass p-4 rounded-lg flex items-center">
+                <FaEuroSign className="text-blue-500 mr-3" size={24} />
+                <div>
+                  <p className="text-sm text-gray-400">Euro</p>
+                  <p
+                    className={`${
+                      theme === 'dark' ? 'text-white' : 'text-text-light'
+                    } font-semibold`}
+                  >
+                    €{balances.EUR.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
             <h3
               className={`text-xl font-semibold mb-4 ${
                 theme === 'dark' ? 'text-white' : 'text-text-light'
