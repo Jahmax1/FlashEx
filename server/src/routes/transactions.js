@@ -24,7 +24,19 @@ router.post('/', auth, role('user'), async (req, res) => {
     await sendAdminNotification(transaction);
     res.status(201).json({ message: 'Request submitted' });
   } catch (error) {
+    console.error('Error submitting transaction:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Get user's transactions (authenticated users only)
+router.get('/my-transactions', auth, role('user'), async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ userId: req.user.userId });
+    res.json(transactions);
+  } catch (error) {
+    console.error('Error fetching user transactions:', error);
+    res.status(500).json({ error: 'Failed to load transactions' });
   }
 });
 
@@ -34,19 +46,25 @@ router.get('/pending', auth, role('admin'), async (req, res) => {
     const transactions = await Transaction.find({ status: 'PENDING' });
     res.json(transactions);
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error fetching pending transactions:', error);
+    res.status(500).json({ error: 'Failed to load transactions' });
   }
 });
 
 // Accept a transaction (admin only)
 router.post('/:id/accept', auth, role('admin'), async (req, res) => {
   try {
-    const transaction = await Transaction.findByIdAndUpdate(req.params.id, { status: 'ACCEPTED' }, { new: true });
+    const transaction = await Transaction.findByIdAndUpdate(
+      req.params.id,
+      { status: 'ACCEPTED' },
+      { new: true }
+    );
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
     }
     res.json({ message: 'Transaction accepted' });
   } catch (error) {
+    console.error('Error accepting transaction:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -54,12 +72,17 @@ router.post('/:id/accept', auth, role('admin'), async (req, res) => {
 // Decline a transaction (admin only)
 router.post('/:id/decline', auth, role('admin'), async (req, res) => {
   try {
-    const transaction = await Transaction.findByIdAndUpdate(req.params.id, { status: 'DECLINED' }, { new: true });
+    const transaction = await Transaction.findByIdAndUpdate(
+      req.params.id,
+      { status: 'DECLINED' },
+      { new: true }
+    );
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
     }
     res.json({ message: 'Transaction declined' });
   } catch (error) {
+    console.error('Error declining transaction:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

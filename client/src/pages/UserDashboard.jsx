@@ -13,6 +13,7 @@ const UserDashboard = () => {
   const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -25,12 +26,13 @@ const UserDashboard = () => {
   const fetchTransactions = async () => {
     if (token) {
       try {
-        const res = await axios.get('http://localhost:5000/api/transactions/pending', {
+        const res = await axios.get('http://localhost:5000/api/transactions/my-transactions', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setTransactions(res.data.filter((tx) => tx.userId === user.userId));
+        setTransactions(res.data);
+        setError('');
       } catch (error) {
-        alert('Failed to load transactions.');
+        setError(error.response?.data?.error || 'Failed to load transactions');
       }
     }
   };
@@ -43,10 +45,10 @@ const UserDashboard = () => {
         const accounts = await web3.eth.getAccounts();
         setWalletAddress(accounts[0]);
       } catch (error) {
-        alert('Failed to connect wallet.');
+        setError('Failed to connect wallet');
       }
     } else {
-      alert('Please install MetaMask!');
+      setError('Please install MetaMask!');
     }
   };
 
@@ -97,6 +99,9 @@ const UserDashboard = () => {
             </motion.button>
           </div>
         </div>
+        {error && (
+          <p className="text-red-500 mb-4">{error}</p>
+        )}
         {!walletAddress ? (
           <motion.button
             whileHover={{ scale: 1.05 }}
