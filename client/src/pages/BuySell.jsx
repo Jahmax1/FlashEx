@@ -15,12 +15,15 @@ const BuySell = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [prices, setPrices] = useState({ btc: 0, eth: 0 });
   const [priceChanges, setPriceChanges] = useState({ btc: 0, eth: 0 });
+  const [balances, setBalances] = useState({ BTC: 0, ETH: 0, USD: 0, EUR: 0 });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!user) {
       navigate('/auth');
     } else {
       fetchPrices();
+      fetchBalances();
       const interval = setInterval(fetchPrices, 10000);
       return () => clearInterval(interval);
     }
@@ -41,7 +44,23 @@ const BuySell = () => {
       });
       setPrices(newPrices);
     } catch (error) {
-      console.error('Failed to fetch prices:', error);
+      console.error('Price fetch error:', error.message);
+      setError('Failed to fetch prices');
+    }
+  };
+
+  const fetchBalances = async () => {
+    if (token) {
+      try {
+        const res = await axios.get('http://localhost:5000/api/users/balance', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setBalances(res.data);
+        setError('');
+      } catch (error) {
+        console.error('Balance fetch error:', error.message);
+        setError(error.response?.data?.error || 'Failed to fetch balances');
+      }
     }
   };
 
@@ -52,31 +71,51 @@ const BuySell = () => {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         const accounts = await web3.eth.getAccounts();
         setWalletAddress(accounts[0]);
+        setError('');
       } catch (error) {
-        alert('Failed to connect wallet.');
+        console.error('Wallet connection error:', error.message);
+        setError('Failed to connect wallet');
       }
     } else {
-      alert('Please install MetaMask!');
+      setError('Please install MetaMask!');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     if (!walletAddress) {
-      alert('Please connect your wallet!');
+      setError('Please connect your wallet!');
       return;
     }
     if (!form.amount || !form.bank) {
-      alert('Please fill in all fields.');
+      setError('Please fill in all fields.');
       return;
     }
+
+    // Client-side balance check
+    const amount = parseFloat(form.amount);
+    if (isNaN(amount) || amount <= 0) {
+      setError('Invalid amount');
+      return;
+    }
+    const fiatCost = amount * (form.crypto === 'BTC' ? prices.btc : prices.eth);
+    if (form.action === 'buy' && balances[form.fiat] < fiatCost) {
+      setError(`Insufficient ${form.fiat} balance`);
+      return;
+    }
+    if (form.action === 'sell' && balances[form.crypto] < amount) {
+      setError(`Insufficient ${form.crypto} balance`);
+      return;
+    }
+
     try {
       await axios.post(
         'http://localhost:5000/api/transactions',
         {
           action: form.action,
           crypto: form.crypto,
-          amount: parseFloat(form.amount),
+          amount,
           fiat: form.fiat,
           bank: form.bank,
         },
@@ -84,8 +123,10 @@ const BuySell = () => {
       );
       alert('Request submitted!');
       setForm({ action: 'buy', crypto: 'BTC', amount: '', fiat: 'USD', bank: '' });
+      fetchBalances(); // Refresh balances
     } catch (error) {
-      alert('Failed to submit request.');
+      console.error('Transaction submission error:', error.message);
+      setError(error.response?.data?.error || 'Failed to submit request');
     }
   };
 
@@ -148,6 +189,9 @@ const BuySell = () => {
             </span>
           </motion.div>
         </div>
+        {error && (
+          <p className="text-red-500 mb-4">{error}</p>
+        )}
         <form onSubmit={handleSubmit}>
           <select
             className={`w-full p-3 mb-4 rounded-lg border ${
