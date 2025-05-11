@@ -60,21 +60,28 @@ const UserDashboard = () => {
       const fiatRes = await axios.get('http://localhost:5000/api/users/balance', {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log('Fetched fiat balances:', fiatRes.data);
       setBalances((prev) => ({ ...prev, ...fiatRes.data }));
 
       // Fetch crypto balances only if wallet is connected and MetaMask is available
       if (walletAddress && window.ethereum) {
         try {
           const web3 = new Web3(window.ethereum);
-          const ethBalance = await web3.eth.getBalance(walletAddress);
+          const ethBalanceWei = await web3.eth.getBalance(walletAddress);
+          console.log('Raw ETH balance (Wei):', ethBalanceWei);
+          const ethBalanceEther = web3.utils.fromWei(ethBalanceWei, 'ether');
+          console.log('Converted ETH balance (Ether):', ethBalanceEther);
+          const ethBalanceNumber = parseFloat(ethBalanceEther) || 0;
+          console.log('Parsed ETH balance (Number):', ethBalanceNumber);
           setBalances((prev) => ({
             ...prev,
-            ETH: parseFloat(web3.utils.fromWei(ethBalance, 'ether')).toFixed(4),
+            ETH: ethBalanceNumber,
             BTC: 0, // Placeholder (requires Bitcoin API)
           }));
         } catch (web3Error) {
-          console.error('Web3 balance fetch failed:', web3Error.message);
+          console.error('Web3 balance fetch error:', web3Error.message);
           setError('Failed to fetch crypto balances');
+          setBalances((prev) => ({ ...prev, ETH: 0 }));
         }
       }
     } catch (error) {
@@ -203,7 +210,7 @@ const UserDashboard = () => {
                   theme === 'dark' ? 'text-white' : 'text-text-light'
                 } font-semibold`}
               >
-                {balances.BTC.toFixed(4)} BTC
+                {typeof balances.BTC === 'number' ? balances.BTC.toFixed(4) : '0.0000'} BTC
               </p>
             </div>
           </div>
@@ -216,7 +223,7 @@ const UserDashboard = () => {
                   theme === 'dark' ? 'text-white' : 'text-text-light'
                 } font-semibold`}
               >
-                {balances.ETH.toFixed(4)} ETH
+                {typeof balances.ETH === 'number' ? balances.ETH.toFixed(4) : '0.0000'} ETH
               </p>
             </div>
           </div>
@@ -229,7 +236,7 @@ const UserDashboard = () => {
                   theme === 'dark' ? 'text-white' : 'text-text-light'
                 } font-semibold`}
               >
-                ${balances.USD.toFixed(2)}
+                ${typeof balances.USD === 'number' ? balances.USD.toFixed(2) : '0.00'}
               </p>
             </div>
           </div>
@@ -242,7 +249,7 @@ const UserDashboard = () => {
                   theme === 'dark' ? 'text-white' : 'text-text-light'
                 } font-semibold`}
               >
-                €{balances.EUR.toFixed(2)}
+                €{typeof balances.EUR === 'number' ? balances.EUR.toFixed(2) : '0.00'}
               </p>
             </div>
           </div>
